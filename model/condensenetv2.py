@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from utils import Conv, LGC, SFR, HS, SELayer
 
-__all__ = ['CondenseNetV2', 'cdnv2_a', 'cdnv2_b', 'cdnv2_c']
+__all__ = ['CondenseNetV2', 'cdnv2_a', 'cdnv2_b', 'cdnv2_c', 'cdnv2_d']
 
 
 class _SFR_DenseLayer(nn.Module):
@@ -120,9 +120,9 @@ class CondenseNetV2(nn.Module):
                                      nn.ReLU(inplace=True))
             self.features.add_module('pool_last',
                                      nn.AvgPool2d(self.pool_size))
-            # if useSE:
-            self.features.add_module('se_last',
-                                     SELayer(self.num_features, reduction=self.args.last_se_reduction))
+            if use_se:
+                self.features.add_module('se_last', 
+                                         SELayer(self.num_features, reduction=self.args.last_se_reduction))
 
     def forward(self, x, progress=None):
         if progress:
@@ -197,5 +197,22 @@ def cdnv2_c(args):
     args.last_se_reduction = 16
     args.HS_start_block = 2
     args.SE_start_block = 3
+    args.fc_channel = 1024
+    return CondenseNetV2(args)
+
+def cdnv2_d(args):
+    args.stages = '3-3-3'
+    args.growth = '8-16-32'
+    args.stages = list(map(int, args.stages.split('-')))
+    args.growth = list(map(int, args.growth.split('-')))
+    args.condense_factor = 4
+    args.trans_factor = 4
+    args.group_1x1 = 4
+    args.group_3x3 = 4
+    args.group_trans = 4
+    args.bottleneck = 4
+    # args.last_se_reduction = 16
+    args.HS_start_block = 10
+    args.SE_start_block = 10
     args.fc_channel = 1024
     return CondenseNetV2(args)
