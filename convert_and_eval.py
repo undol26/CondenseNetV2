@@ -45,9 +45,16 @@ parser.add_argument('--print_freq', '-p', default=100, type=int,
 def main():
     args = parser.parse_args()
 
-    assert args.dataset == 'imagenet'
-    args.num_classes = 1000
-    args.IMAGE_SIZE = 224
+    # assert args.dataset == 'imagenet'
+    if args.dataset == 'imagenet':
+        args.num_classes = 1000
+        args.IMAGE_SIZE = 224
+    elif args.dataset == 'cifar100':
+        args.num_classes = 100
+        args.IMAGE_SIZE = 32
+    elif args.dataset == 'cifar10':
+        args.num_classes = 10
+        args.IMAGE_SIZE = 32
 
     if args.train_url and not os.path.exists(args.train_url):
         os.makedirs(args.train_url)
