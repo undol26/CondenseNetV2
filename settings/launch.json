@@ -1,0 +1,48 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "module": "torch.distributed.launch",
+            "request": "launch",
+            // "program": "${file}",
+            "console": "integratedTerminal",
+            "cwd":"${fileDirname}",
+
+            // condensenet v2
+            // training
+            "args": [
+                "--nproc_per_node", "2", //8
+                "train.py",
+                "--model", "cdnv2_a",
+                "--batch-size", "256", // 1024
+                "--lr", "0.4",
+                "--warmup-lr", "0.1",
+                "--warmup-epochs", "5",
+                "--opt", "sgd",
+                "--sched", "cosine",
+                "--epochs", "350",
+                "--weight-decay", "4e-5",
+                "--aa", "rand-m9-mstd0.5",
+                "--remode", "pixel",
+                "--reprob", "0.2",
+                "--data_url", "../data/cifar/cifar-10/",
+                "--train_url", "save"
+
+                // "--resume",
+                // // "--print_model",
+                // "--paths", "2-4-8", // 2-4-8
+                // "--ltdn_model",
+                // "--summary_model", "TORCH_SUMMARY", // or TORCH_INFO
+                // "--measure_model"
+            ]
+
+
+            
+        }
+    ]
+}
