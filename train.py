@@ -191,6 +191,12 @@ parser.add_argument('--start-eval-epoch', type=int, default=230, metavar='N',
 parser.add_argument('--dist-url', default='tcp://127.0.0.1:29502', type=str,
                     help='url used to set up distributed training')
 
+# undol add
+# parser.add_argument('--print_model', action='store_true', help='print model architecture')
+parser.add_argument('--ltdn_model', action='store_true', help='activate ltdn model')
+# parser.add_argument('--measure_model', action='store_true', help='print measure_model (off when testing)')
+# parser.add_argument('--summary_model', default="TORCH_SUMMAY", type=str, metavar='SM', help='print torch summary type')
+parser.add_argument('--paths', type=str, metavar='P', help='number of path per stage')
 
 val_acc_top1 = []
 val_acc_top5 = []
