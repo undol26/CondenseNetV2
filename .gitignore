@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# undol
+__init__.py
+save/
+saveargs.yaml
+savelog.txt
