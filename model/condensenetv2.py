@@ -101,17 +101,7 @@ class _SFR_DenseLayerLTDN(nn.Module):
                 returnList.append(output_part['output_part{0}'.format(i+1)])
         
         return torch.cat(returnList, 1) 
-        
-        # x_ = x
-        # x = self.conv_1(x)
-        # x = self.conv_2(x)
-        # if self.use_se:
-        #     x = self.se(x)
-        # sfr_feature = self.sfr(x)
-        # y = x_ + sfr_feature
-        # return torch.cat([y, x], 1)    
-
-
+    
 class _SFR_DenseBlock(nn.Sequential):
     def __init__(self, num_layers, in_channels, growth_rate, path, args, activation, use_se):
         super(_SFR_DenseBlock, self).__init__()
