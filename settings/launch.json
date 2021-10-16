@@ -5,44 +5,63 @@
     "version": "0.2.0",
     "configurations": [
         {
+            // training
             "name": "Python: Current File",
             "type": "python",
-            "module": "torch.distributed.launch",
             "request": "launch",
+            "module": "torch.distributed.launch",
             // "program": "${file}",
             "console": "integratedTerminal",
             "cwd":"${fileDirname}",
 
-            // condensenet v2
-            // training
+            // training, cifar
             "args": [
                 "--nproc_per_node", "2", //8
                 "train.py",
-                "--model", "cdnv2_a",
-                "--batch-size", "256", // 1024
+                "--model", "cdnv2_d",
+                "--batch-size", "64",
+                "--dataset", "cifar10",
+                "--num-classes", "10",
+                "--img-size", "32",
                 "--lr", "0.4",
                 "--warmup-lr", "0.1",
                 "--warmup-epochs", "5",
                 "--opt", "sgd",
                 "--sched", "cosine",
-                "--epochs", "350",
+                "--epochs", "2",
                 "--weight-decay", "4e-5",
                 "--aa", "rand-m9-mstd0.5",
                 "--remode", "pixel",
                 "--reprob", "0.2",
                 "--data_url", "../data/cifar/cifar-10/",
-                "--train_url", "save"
-
-                // "--resume",
-                // // "--print_model",
-                // "--paths", "2-4-8", // 2-4-8
-                // "--ltdn_model",
-                // "--summary_model", "TORCH_SUMMARY", // or TORCH_INFO
-                // "--measure_model"
+                "--train_url", "save/cifar-10_test",
+                "--amp",
+                // "--print_model"
+                "--ltdn_model",
+                "--paths", "2-4-8"
             ]
 
+            // testing
+            // "name": "Python: Current File",
+            // "type": "python",
+            // "request": "launch",
+            // "program": "${file}",
+            // "console": "integratedTerminal",
+            // "cwd":"${fileDirname}",
+            // "args": [
+            //     "--model", "cdnv2_a",
+            //     "-j", "32",
+            //     "-b", "256", // 1024
+            //     "--dataset", "cifar10",
+            //     "--data_url", "../data/cifar/cifar-100/",
+            //     "--train_url", "save/cifar-100_test",
+            //     // "--evaluate_from", "save/cifar-100_test/model_best.pth.tar",
+            //     // "--evaluate_from", "save/cifar-100_test/checkpoint-0.pth.tar",
+            //     "--convert_from", "save/cifar-100_test/checkpoint-0.pth.tar",
+            //     "--print_freq", "100"
 
-            
+            //     // "--amp"
+            // ]
         }
     ]
 }
