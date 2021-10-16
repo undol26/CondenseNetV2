@@ -40,7 +40,12 @@ parser.add_argument('--wo_ema_weight', action='store_true', default=False,
                     help='whether to run the code on huawei cloud')
 parser.add_argument('--print_freq', '-p', default=100, type=int,
                     metavar='N', help='print frequency (default: 10)')
-
+# undol add
+# parser.add_argument('--print_model', action='store_true', help='print model architecture')
+parser.add_argument('--ltdn_model', action='store_true', help='activate ltdn model')
+# parser.add_argument('--measure_model', action='store_true', help='print measure_model (off when testing)')
+# parser.add_argument('--summary_model', default="TORCH_SUMMAY", type=str, metavar='SM', help='print torch summary type')
+parser.add_argument('--paths', type=str, metavar='P', help='number of path per stage')
 
 def main():
     args = parser.parse_args()
