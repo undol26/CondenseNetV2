@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from utils import Conv, LGC, SFR, HS, SELayer
+from utils import Conv, LGC, SFR, HS, SELayer, ResNet
 
 __all__ = ['CondenseNetV2', 'cdnv2_a', 'cdnv2_b', 'cdnv2_c', 'cdnv2_d']
 
@@ -154,6 +154,12 @@ class CondenseNetV2(nn.Module):
                                                         stride=self.init_stride,
                                                         padding=1,
                                                         bias=False))
+        
+        if args.ltdn_model:
+            resnet = ResNet(int(self.num_features/2), int(self.num_features/2),
+                           kernel_size=[1,3,1])
+            self.features.add_module('resnet', resnet)
+        
         for i in range(len(self.stages)):
             activation = 'HS' if i >= args.HS_start_block else 'ReLU'
             use_se = True if i >= args.SE_start_block else False
