@@ -1,0 +1,70 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            // training
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "module": "torch.distributed.launch",
+            // "program": "${file}",
+            "console": "integratedTerminal",
+            "cwd":"${fileDirname}",
+
+            // training, cifar
+            "args": [
+                "--nproc_per_node", "2", //8
+                "train.py",
+                "--model", "cdnv2_d",
+                "--batch-size", "64",
+                "--img-size", "32",
+                "--lr", "0.4",
+                "--warmup-lr", "0.1",
+                "--warmup-epochs", "5",
+                "--opt", "sgd",
+                "--sched", "cosine",
+                "--epochs", "300",
+                "--weight-decay", "4e-5",
+                "--aa", "rand-m9-mstd0.5",
+                "--remode", "pixel",
+                "--reprob", "0.2",
+                "--amp",
+                "--dataset", "cifar100",
+                "--num-classes", "100",
+                "--data_url", "../data/cifar/cifar-100/",
+                "--train_url", "save/cifar-100_b64_ltdn_p248",
+                "--num-gpu", "2",
+                "--ltdn_model",
+                "--paths", "2-4-8"
+                // "--print_model"
+                // "--resume", "./save/cifar-10_b64_ltdn_p248/last.pth.tar"
+                // "--no-resume-opt"
+            ]
+
+            // testing
+            // "name": "Python: Current File",
+            // "type": "python",
+            // "request": "launch",
+            // "program": "${file}",
+            // "console": "integratedTerminal",
+            // "cwd":"${fileDirname}",
+            // "args": [
+            //     "--model", "cdnv2_a",
+            //     "-j", "32",
+            //     "-b", "256", // 1024
+            //     "--dataset", "cifar10",
+            //     "--data_url", "../data/cifar/cifar-100/",
+            //     "--train_url", "save/cifar-100_test",
+            //     // "--evaluate_from", "save/cifar-100_test/model_best.pth.tar",
+            //     // "--evaluate_from", "save/cifar-100_test/checkpoint-0.pth.tar",
+            //     "--convert_from", "save/cifar-100_test/checkpoint-0.pth.tar",
+            //     "--print_freq", "100"
+
+            //     // "--amp"
+            // ]
+        }
+    ]
+}

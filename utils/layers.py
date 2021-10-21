@@ -516,3 +516,51 @@ class CondenseSFR(nn.Module):
         x = x.transpose(1, 2).contiguous()  # SIZE: N, C, HW
         x = x.view(N, C, H, W)  # SIZE: N, C, HW
         return x
+
+class ResNet(nn.Module): #// module로 바꾸고 아래 add_module을 죄다 손봐야 됨.
+    def __init__(self, in_channels, out_channels, kernel_size, 
+                 stride=1, padding=0):
+        super(ResNet, self).__init__()
+        
+        # 1st
+        self.conv1 = nn.Conv2d(in_channels, out_channels,
+                                          kernel_size=kernel_size[0],
+                                          stride=stride,
+                                          padding=padding, bias=False)
+        self.norm1 = nn.BatchNorm2d(out_channels)
+        self.relu1 = nn.ReLU(inplace=True)
+
+        # 2nd
+        self.conv2 = nn.Conv2d(out_channels, out_channels,
+                                          kernel_size=kernel_size[1],
+                                          stride=stride,
+                                          padding=1, bias=False)
+        self.norm2 = nn.BatchNorm2d(out_channels)
+        self.relu2 = nn.ReLU(inplace=True)
+        
+        # 3rd
+        self.conv3 = nn.Conv2d(out_channels, out_channels,
+                                          kernel_size=kernel_size[2],
+                                          stride=stride,
+                                          padding=padding, bias=False)
+        self.norm3 = nn.BatchNorm2d(out_channels)
+        self.relu3 = nn.ReLU(inplace=True)
+        
+    def forward(self, x):
+        # 여기서 len(x)/2 이런식으로 조절, view 이런걸로 조절.해서 반만 들어가서 반만 concatenate할 수 있도록.
+        top_half = int(x.shape[1]/2)
+        output_channels = int(x.shape[1])
+        upper_input = x[:,0:top_half,:,:] #[1, 8, 32, 32]
+        lower_input = x[:,top_half:output_channels,:,:]
+        
+        upper_input = self.conv1(upper_input) 
+        upper_input = self.norm1(upper_input) 
+        upper_input = self.relu1(upper_input) 
+        upper_input = self.conv2(upper_input) 
+        upper_input = self.norm2(upper_input) 
+        upper_input = self.relu2(upper_input) 
+        upper_input = self.conv3(upper_input) 
+        upper_input = self.norm3(upper_input)
+        upper_input = self.relu3(upper_input) 
+        
+        return torch.cat([upper_input, lower_input], 1)

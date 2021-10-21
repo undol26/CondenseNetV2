@@ -1,0 +1,32 @@
+[특이사항]
+pytorch 1.10 -> 1.15
+numpy 1.14.5 -> 1.16.4
+
+
+[기본 트레이닝]
+python -m torch.distributed.launch --nproc_per_node=2 train.py --model cdnv2_a \
+  --batch-size 256 --lr 0.4 --warmup-lr 0.1 --warmup-epochs 5 --opt sgd --sched cosine \
+  --epochs 2 --weight-decay 4e-5 --aa rand-m9-mstd0.5 --remode pixel --reprob 0.2 \
+  --data_url ../data/cifar/cifar-10/ --train_url save
+
+
+cifar-10-ltdn_model
+1번창
+python -m torch.distributed.launch --nproc_per_node=2 train.py --model cdnv2_d \
+  --batch-size 64 --lr 0.4 --warmup-lr 0.1 --warmup-epochs 5 --opt sgd --sched cosine \
+  --epochs 300 --weight-decay 4e-5 --aa rand-m9-mstd0.5 --remode pixel --reprob 0.2 --amp \
+  --dataset cifar10 --num-classes 10 --img-size 32 \
+  --data_url ../data/cifar/cifar-10/ --train_url save/cifar-10_b64_ltdn_p248 \
+  --ltdn_model --paths 2-4-8  
+
+3번창 + resnet 넣은거.
+python -m torch.distributed.launch --nproc_per_node=2 train.py --model cdnv2_d \
+  --batch-size 64 --lr 0.4 --warmup-lr 0.1 --warmup-epochs 5 --opt sgd --sched cosine \
+  --epochs 300 --weight-decay 4e-5 --aa rand-m9-mstd0.5 --remode pixel --reprob 0.2 --amp --num-gpu 2\
+  --dataset cifar10 --num-classes 10 --img-size 32 \
+  --data_url ../data/cifar/cifar-100/ --train_url save/cifar-100_b64_ltdn_p248 \
+  --ltdn_model --paths 2-4-8  
+
+
+nccl already has address 오류뜨면 
+ps -elf | grep python 해서 실행되는 cdnv2_d 이런거 있는 process id kill 하기 (kill -9 24400)

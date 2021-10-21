@@ -40,7 +40,12 @@ parser.add_argument('--wo_ema_weight', action='store_true', default=False,
                     help='whether to run the code on huawei cloud')
 parser.add_argument('--print_freq', '-p', default=100, type=int,
                     metavar='N', help='print frequency (default: 10)')
-
+# undol add
+# parser.add_argument('--print_model', action='store_true', help='print model architecture')
+parser.add_argument('--ltdn_model', action='store_true', help='activate ltdn model')
+# parser.add_argument('--measure_model', action='store_true', help='print measure_model (off when testing)')
+# parser.add_argument('--summary_model', default="TORCH_SUMMAY", type=str, metavar='SM', help='print torch summary type')
+parser.add_argument('--paths', type=str, metavar='P', help='number of path per stage')
 
 def main():
     args = parser.parse_args()
@@ -110,7 +115,8 @@ def main():
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
 
-    val_loader = torch.utils.data.DataLoader(
+    if args.dataset == 'imagenet':
+        val_loader = torch.utils.data.DataLoader(
         datasets.ImageFolder(
             valdir,
             transforms.Compose([
@@ -125,7 +131,18 @@ def main():
             ])),
         batch_size=args.batch_size, shuffle=False,
         num_workers=args.workers, pin_memory=True)
-
+    elif args.dataset in ['cifar100','cifar10']:
+        val_loader = torch.utils.data.DataLoader(
+        datasets.ImageFolder(
+            valdir,
+            transforms.Compose([
+                transforms.Resize(32, interpolation=PIL.Image.BILINEAR if args.model in ['cdnv2_c', 'converted_cdnv2_c'] else PIL.Image.BICUBIC),
+                transforms.ToTensor(),
+                normalize,
+            ])),
+        batch_size=args.batch_size, shuffle=False,
+        num_workers=args.workers, pin_memory=True)
+    
     val_acc_top1, val_acc_top5, valid_loss = [], [], []
     val_acc1, val_acc5, val_loss = validate(val_loader, model, criterion, args)
     val_acc_top1.append(val_acc1)
