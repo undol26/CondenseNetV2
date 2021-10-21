@@ -20,25 +20,28 @@
                 "train.py",
                 "--model", "cdnv2_d",
                 "--batch-size", "64",
-                "--dataset", "cifar10",
-                "--num-classes", "10",
                 "--img-size", "32",
                 "--lr", "0.4",
                 "--warmup-lr", "0.1",
                 "--warmup-epochs", "5",
                 "--opt", "sgd",
                 "--sched", "cosine",
-                "--epochs", "2",
+                "--epochs", "300",
                 "--weight-decay", "4e-5",
                 "--aa", "rand-m9-mstd0.5",
                 "--remode", "pixel",
                 "--reprob", "0.2",
-                "--data_url", "../data/cifar/cifar-10/",
-                "--train_url", "save/cifar-10_test",
                 "--amp",
-                // "--print_model"
+                "--dataset", "cifar100",
+                "--num-classes", "100",
+                "--data_url", "../data/cifar/cifar-100/",
+                "--train_url", "save/cifar-100_b64_ltdn_p248",
+                "--num-gpu", "2",
                 "--ltdn_model",
                 "--paths", "2-4-8"
+                // "--print_model"
+                // "--resume", "./save/cifar-10_b64_ltdn_p248/last.pth.tar"
+                // "--no-resume-opt"
             ]
 
             // testing
