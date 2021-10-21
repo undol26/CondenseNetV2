@@ -115,7 +115,8 @@ def main():
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
 
-    val_loader = torch.utils.data.DataLoader(
+    if args.dataset == 'imagenet':
+        val_loader = torch.utils.data.DataLoader(
         datasets.ImageFolder(
             valdir,
             transforms.Compose([
@@ -130,7 +131,18 @@ def main():
             ])),
         batch_size=args.batch_size, shuffle=False,
         num_workers=args.workers, pin_memory=True)
-
+    elif args.dataset in ['cifar100','cifar10']:
+        val_loader = torch.utils.data.DataLoader(
+        datasets.ImageFolder(
+            valdir,
+            transforms.Compose([
+                transforms.Resize(32, interpolation=PIL.Image.BILINEAR if args.model in ['cdnv2_c', 'converted_cdnv2_c'] else PIL.Image.BICUBIC),
+                transforms.ToTensor(),
+                normalize,
+            ])),
+        batch_size=args.batch_size, shuffle=False,
+        num_workers=args.workers, pin_memory=True)
+    
     val_acc_top1, val_acc_top5, valid_loss = [], [], []
     val_acc1, val_acc5, val_loss = validate(val_loader, model, criterion, args)
     val_acc_top1.append(val_acc1)
