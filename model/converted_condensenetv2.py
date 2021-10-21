@@ -6,7 +6,7 @@ __all__ = ['ConvertedCondenseNetV2', 'converted_cdnv2_a', 'converted_cdnv2_b', '
 
 
 class _SFR_DenseLayer(nn.Module):
-    def __init__(self, in_channels, growth_rate, args, activation, use_se=False):
+    def __init__(self, index, in_channels, growth_rate, args, activation, use_se=False):
         super(_SFR_DenseLayer, self).__init__()
         self.group_1x1 = args.group_1x1
         self.group_3x3 = args.group_3x3
@@ -17,9 +17,9 @@ class _SFR_DenseLayer(nn.Module):
                                   kernel_size=1, groups=self.group_1x1,
                                   activation=activation)
         ### 3x3 conv b*k --> k
-        self.conv_2 = Conv(args.bottleneck * growth_rate, growth_rate,
+        self.conv_2 = Conv(index, args.bottleneck * growth_rate, growth_rate,
                            kernel_size=3, padding=1, groups=self.group_3x3,
-                           activation=activation)
+                           activation=activation, rsdc_size=args.rsdc_size)
         ### 1x1 res conv k(8-16-32)--> i (k*l)
         self.sfr = CondenseSFR(growth_rate, in_channels, kernel_size=1,
                                groups=self.group_trans, activation=activation)

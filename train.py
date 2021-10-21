@@ -197,6 +197,7 @@ parser.add_argument('--ltdn_model', action='store_true', help='activate ltdn mod
 # parser.add_argument('--measure_model', action='store_true', help='print measure_model (off when testing)')
 # parser.add_argument('--summary_model', default="TORCH_SUMMAY", type=str, metavar='SM', help='print torch summary type')
 parser.add_argument('--paths', type=str, metavar='P', help='number of path per stage')
+parser.add_argument('--rsdc_size', type=int, default=3, help='rsdc kernel size')
 
 val_acc_top1 = []
 val_acc_top5 = []

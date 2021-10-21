@@ -6,7 +6,7 @@ __all__ = ['CondenseNetV2', 'cdnv2_a', 'cdnv2_b', 'cdnv2_c', 'cdnv2_d']
 
 
 class _SFR_DenseLayer(nn.Module):
-    def __init__(self, in_channels, growth_rate, args, activation, use_se=False):
+    def __init__(self, index, in_channels, growth_rate, args, activation, use_se=False):
         super(_SFR_DenseLayer, self).__init__()
         self.group_1x1 = args.group_1x1
         self.group_3x3 = args.group_3x3
@@ -20,7 +20,7 @@ class _SFR_DenseLayer(nn.Module):
         ### 3x3 conv b*k --> k
         self.conv_2 = Conv(args.bottleneck * growth_rate, growth_rate,
                            kernel_size=3, padding=1, groups=self.group_3x3,
-                           activation=activation)
+                           activation=activation, rsdc_size=args.rsdc_size)
         ### 1x1 res conv k(8-16-32)--> i (k*l)
         self.sfr = SFR(growth_rate, in_channels, kernel_size=1,
                        groups=self.group_trans, condense_factor=args.trans_factor,
@@ -39,7 +39,7 @@ class _SFR_DenseLayer(nn.Module):
         return torch.cat([y, x], 1)
     
 class _SFR_DenseLayerLTDN(nn.Module):
-    def __init__(self, in_channels, growth_rate, path, args, activation, use_se=False):
+    def __init__(self, index, in_channels, growth_rate, path, args, activation, use_se=False):
         super(_SFR_DenseLayerLTDN, self).__init__()
         self.group_1x1 = args.group_1x1
         self.group_3x3 = args.group_3x3
@@ -61,7 +61,7 @@ class _SFR_DenseLayerLTDN(nn.Module):
             ### 3x3 conv b*k --> k
             layer2 = Conv(int(args.bottleneck * growth_rate/path), int(growth_rate/path),
                             kernel_size=3, padding=1, groups=self.group_3x3,
-                            activation=activation)
+                            activation=activation, rsdc_size=args.rsdc_size)
             self.add_module('path_%d%d' % ((i + 1), 2), layer2)
             ### 1x1 res conv k(8-16-32)--> i (k*l)
             layer3 = SFR(int(growth_rate/path), int(in_channels/path), kernel_size=1,
@@ -103,17 +103,17 @@ class _SFR_DenseLayerLTDN(nn.Module):
         return torch.cat(returnList, 1) 
     
 class _SFR_DenseBlock(nn.Sequential):
-    def __init__(self, num_layers, in_channels, growth_rate, path, args, activation, use_se):
+    def __init__(self, index, num_layers, in_channels, growth_rate, path, args, activation, use_se):
         super(_SFR_DenseBlock, self).__init__()
         
         if args.ltdn_model:
             for i in range(num_layers):
-                layer = _SFR_DenseLayerLTDN(in_channels + i * growth_rate, growth_rate, path, args, activation, use_se)
+                layer = _SFR_DenseLayerLTDN(index, in_channels + i * growth_rate, growth_rate, path, args, activation, use_se)
                 self.add_module('denselayer_%d' % (i + 1), layer)
                 
         else:
             for i in range(num_layers):
-                layer = _SFR_DenseLayer(in_channels + i * growth_rate, growth_rate, args, activation, use_se)
+                layer = _SFR_DenseLayer(index, in_channels + i * growth_rate, growth_rate, args, activation, use_se)
                 self.add_module('denselayer_%d' % (i + 1), layer)
 
 
@@ -179,6 +179,7 @@ class CondenseNetV2(nn.Module):
         last = (i == len(self.stages) - 1)
         # print(f'add block, {i}th')
         block = _SFR_DenseBlock(
+            index = i,
             num_layers=self.stages[i],
             in_channels=self.num_features,
             growth_rate=self.growth[i],
